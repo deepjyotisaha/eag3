@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sensitive Files - NEVER COMMIT THESE
+**/.env
+**/.env.local
+**/.env.*
+**/credentials.json
+**/token.pickle
+**/*.pem
+**/*.key
+**/*.cert
+**/secrets.*
+
+# IDE and Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+log/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Project specific
+backend/credentials.json
+backend/token.pickle
+backend/.env
+backend/secrets.*
+
+# Generated files
+generate_icons.py
+icon.svg
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# Environment and credentials
+.env
+credentials.json
+token.pickle
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/ 

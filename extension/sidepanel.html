@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gmail Newsletter Digest</title>
+    <style>
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .config-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .progress {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Gmail Newsletter Digest</h2>
+        
+        <div class="config-section">
+            <div class="input-group">
+                <label for="emailCount">Number of emails to analyze:</label>
+                <input type="number" id="emailCount" min="1" max="100" value="10">
+            </div>
+            <button id="fetchDigest">Fetch Newsletter Digest</button>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <div>Processing emails...</div>
+            <div class="progress" id="progressMessage">Initializing...</div>
+        </div>
+
+        <div class="error" id="errorMessage"></div>
+
+        <div class="results" id="emailResults">
+            <!-- Newsletter digest will be displayed here -->
+        </div>
+    </div>
+    <script src="sidepanel.js"></script>
+</body>
+</html> 
