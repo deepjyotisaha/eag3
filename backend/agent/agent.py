@@ -12,10 +12,22 @@ logger = logging.getLogger(__name__)
 
 # Define available tools and their functions
 TOOLS = {
-    'fetch_emails': fetch_emails,
-    'analyze_newsletters': analyze_newsletters,
-    'summarize_newsletters': summarize_newsletters,
-    'format_digest': format_digest
+    'fetch_emails': {
+        'function': fetch_emails,
+        'description': 'This tool fetches emails from Gmail, takes a number of emails to fetch as input, and returns a list of email dictionaries containing subject, sender, and content'
+    },
+    'analyze_newsletters': {
+        'function': analyze_newsletters,
+        'description': 'This tool analyzes emails, takes a list of email dictionaries, analyzes them and returns the identified newsletters with an added flag is_newsletter'
+    },
+    'summarize_newsletters': {
+        'function': summarize_newsletters,
+        'description': 'This tool generates summaries of newsletters, takes a list of identified newsletters, and returns the same list with added summary field for each newsletter'
+    },
+    'format_digest': {
+        'function': format_digest,
+        'description': 'This tool formats newsletter summaries into a markdown digest, takes a list of summarized newsletters, and returns a markdown-formatted string with introduction, sections, and conclusion'
+    }
 }
 
 def invoke_agent(email_count: int) -> str:
@@ -39,10 +51,16 @@ def invoke_agent(email_count: int) -> str:
             'digest': None
         }
         
+        # Create a serializable version of tools for the LLM
+        tools_for_llm = {
+            name: {'description': tool['description']}
+            for name, tool in TOOLS.items()
+        }
+        
         # Main processing loop
         while True:
             # Plan next step
-            plan = plan_next_step(state, list(TOOLS.keys()))
+            plan = plan_next_step(state, tools_for_llm)
             logger.info(f"Planned next step: {plan['tool']} - {plan['reason']}")
             
             if plan['is_complete']:
@@ -54,7 +72,18 @@ def invoke_agent(email_count: int) -> str:
                 raise ValueError(f"Invalid tool selected: {plan['tool']}")
             
             # Execute the planned step
-            tool_func = TOOLS[plan['tool']]
+            tool_func = TOOLS[plan['tool']]['function']
+            
+            # Skip newsletter analysis if no newsletters were found
+            if plan['tool'] == 'analyze_newsletters' and state['emails']:
+                analyzed_emails = tool_func(state['emails'])
+                newsletter_count = sum(1 for email in analyzed_emails if email.get('is_newsletter', False))
+                if newsletter_count == 0:
+                    logger.info("No newsletters found in the emails")
+                    return "# Newsletter Digest\n\nNo newsletters found in the analyzed emails."
+                state['newsletters'] = analyzed_emails
+                continue
+            
             if plan['tool'] == 'fetch_emails':
                 state['emails'] = tool_func(email_count)
             elif plan['tool'] == 'analyze_newsletters':

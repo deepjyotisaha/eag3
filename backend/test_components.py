@@ -3,11 +3,6 @@ import os
 from dotenv import load_dotenv
 from agent.tools import fetch_emails, analyze_newsletters, summarize_newsletters, format_digest
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 logger = logging.getLogger(__name__)
 
 def test_gmail_connection():

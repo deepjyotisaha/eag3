@@ -1,11 +1,19 @@
+import os
+import sys
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import logging factory first - this will configure logging immediately
+from backend.logger_factory import LoggerFactory
+
+# Create logger after logging is configured
+logger = LoggerFactory.get_logger(__name__)
+
+# Now import other modules after logging is configured
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import logging
-from agent.agent import invoke_agent
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+from backend.agent.agent import invoke_agent
 
 app = Flask(__name__)
 # Configure CORS to allow all methods and headers

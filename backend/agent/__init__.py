@@ -1,3 +1,3 @@
 """
-Agent package for Gmail Newsletter Digest.
+Agent package for the Gmail Newsletter Digest extension.
 """ 

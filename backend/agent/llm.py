@@ -1,16 +1,17 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-import logging
 from typing import List, Dict, Any
 import json
+import sys
+import os
 
-# Configure logging with detailed format
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Add the parent directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Import logger factory and get logger
+from backend.logger_factory import LoggerFactory
+logger = LoggerFactory.get_logger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -18,65 +19,165 @@ load_dotenv()
 # Configure Gemini
 api_key = os.getenv('GOOGLE_API_KEY')
 if not api_key:
+    logger.error("GOOGLE_API_KEY not found in environment variables")
     raise ValueError("GOOGLE_API_KEY not found in environment variables")
 
-logger.info("Configuring Gemini API...")
+logger.debug("Configuring Gemini API...")  # Changed to debug
 try:
+    # Configure the API
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.0-flash')
-    logger.info("Gemini API configured successfully")
+    logger.debug("Gemini API configured successfully")  # Changed to debug
+    
+    # List available models
+    available_models = genai.list_models()
+    model_names = [model.name for model in available_models]
+    logger.debug(f"Available models: {model_names}")  # Changed to debug
+    
+    # Check if our desired model is available
+    desired_model = 'gemini-2.0-flash'
+    full_model_name = f'models/{desired_model}'
+    if full_model_name not in model_names:
+        logger.error(f"Model {full_model_name} not found in available models")
+        logger.error("Please check the API documentation for the correct model name")
+        raise ValueError(f"Model {full_model_name} not available")
+    
+    # Try to get the model
+    model = genai.GenerativeModel(desired_model)  # Use base name without prefix
+    # Test the model with a simple prompt
+    test_response = model.generate_content("Generate a poem about spring flowers")
+    logger.debug(f"Test response: {test_response.text}")  # Changed to debug
+    logger.debug("Model test successful")  # Changed to debug
+    
 except Exception as e:
     logger.error(f"Error configuring Gemini API: {str(e)}")
+    logger.error(f"Error type: {type(e).__name__}")
+    logger.error(f"Error details: {str(e)}")
     raise
+
+def clean_json_response(response_text: str) -> str:
+    """
+    Clean the response text to ensure it's valid JSON before parsing.
+    Removes markdown formatting and any other non-JSON content.
+    
+    Args:
+        response_text (str): Raw response text from LLM
+        
+    Returns:
+        str: Cleaned JSON string
+    """
+    # Remove markdown code blocks
+    response_text = response_text.replace('```json', '').replace('```', '')
+    
+    # Find the first '{' and last '}'
+    start = response_text.find('{')
+    end = response_text.rfind('}')
+    
+    if start == -1 or end == -1:
+        raise ValueError("No valid JSON object found in response")
+        
+    # Extract just the JSON object
+    json_str = response_text[start:end + 1]
+    
+    # Remove any leading/trailing whitespace
+    json_str = json_str.strip()
+    
+    return json_str
 
 def identify_newsletters(emails: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Use LLM to identify which emails are newsletters.
+    
+    Args:
+        emails (List[Dict[str, Any]]): List of email dictionaries to analyze
+        
+    Returns:
+        List[Dict[str, Any]]: List of emails with added is_newsletter flag
     """
-    logger.info(f"Starting newsletter identification for {len(emails)} emails")
-    
-    # Create a safe version of emails for the prompt
-    safe_emails = []
-    for email in emails:
-        safe_email = {
-            'subject': email.get('subject', ''),
-            'from': email.get('from', ''),
-            'content': email.get('content', '')[:500]  # Limit content length
-        }
-        safe_emails.append(safe_email)
-        logger.debug(f"Processed email: {safe_email['subject']} from {safe_email['from']}")
-    
-    prompt = f"""
-    Analyze these emails and identify which ones are newsletters. A newsletter typically:
-    - Has a regular distribution pattern
-    - Contains curated content
-    - Often has an unsubscribe link
-    - Is from a business, organization, or service
-    
-    Emails to analyze:
-    {json.dumps(safe_emails, indent=2)}
-    
-    Return a JSON array of the emails that are newsletters, with an additional field 'is_newsletter: true'.
-    Format your response as a valid JSON array only, with no additional text.
-    """
-    
-    logger.info("Making LLM call to identify newsletters")
     try:
+        # Create a safe version of emails for the prompt
+        safe_emails = []
+        for email in emails:
+            safe_email = {
+                'subject': email.get('subject', ''),
+                'from': email.get('from', ''),
+                'content': email.get('content', '')[:1000]  # Limit content length
+            }
+            safe_emails.append(safe_email)
+        
+        prompt = f"""
+        Analyze these emails and identify which ones are newsletters.
+        A newsletter is a regularly distributed publication about a particular topic or set of topics.
+        
+        Emails to analyze:
+        {json.dumps(safe_emails, indent=2)}
+        
+        For each email, determine if it's a newsletter based on:
+        1. Regular distribution pattern
+        2. Topic-focused content
+        3. Mass distribution characteristics
+        4. Newsletter-like formatting
+        
+        Return a JSON array where each object has:
+        {{
+            "subject": "email subject",
+            "from": "sender email",
+            "is_newsletter": true/false
+        }}
+        
+        IMPORTANT:
+        1. Return ONLY the JSON array, no other text
+        2. Include ALL emails from the input, not just newsletters
+        3. Set is_newsletter to false for non-newsletter emails
+        4. Match the subject and from fields exactly with the input emails
+        5. Respond with raw JSON only, no markdown or code blocks
+        6. DO NOT wrap the response in ```json or any other markdown formatting
+        7. Start your response with a single [ character and end with a single ] character
+        """
+        
+        logger.info("Sending prompt to LLM for newsletter identification")
         response = model.generate_content(prompt)
+        logger.debug(f"Response attributes: {dir(response)}")
+        
+        if not hasattr(response, 'text'):
+            logger.error("Response object does not have 'text' attribute")
+            logger.error(f"Available attributes: {dir(response)}")
+            return []
+            
         logger.debug(f"LLM Response for newsletter identification: {response.text}")
         
-        # Try to parse the response as JSON
-        newsletters = json.loads(response.text)
-        logger.info(f"Successfully identified {len(newsletters)} newsletters")
-        for newsletter in newsletters:
-            logger.debug(f"Identified newsletter: {newsletter['subject']} from {newsletter['from']}")
-        return newsletters
+        # Clean and parse the response as JSON
+        cleaned_response = clean_json_response(response.text)
+        newsletters = json.loads(cleaned_response)
+        
+        # Validate and filter newsletters to match input emails
+        valid_newsletters = []
+        for email in emails:
+            matching_newsletter = next(
+                (n for n in newsletters 
+                 if n['subject'] == email['subject'] and n['from'] == email['from']),
+                None
+            )
+            if matching_newsletter:
+                # Add is_newsletter flag to original email
+                email['is_newsletter'] = matching_newsletter['is_newsletter']
+                valid_newsletters.append(email)
+            else:
+                # If no match found, mark as not a newsletter
+                email['is_newsletter'] = False
+                valid_newsletters.append(email)
+        
+        newsletter_count = sum(1 for email in valid_newsletters if email['is_newsletter'])
+        logger.info(f"Successfully identified {newsletter_count} newsletters out of {len(emails)} emails")
+        
+        return valid_newsletters
     except json.JSONDecodeError as e:
         logger.error(f"Error parsing JSON response: {str(e)}")
         logger.error(f"Raw response: {response.text}")
         return []
     except Exception as e:
         logger.error(f"Error identifying newsletters: {str(e)}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {str(e)}")
         return []
 
 def generate_summaries(newsletters: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -141,7 +242,7 @@ def create_markdown_digest(summarized_newsletters: List[Dict[str, Any]]) -> str:
     logger.info("Successfully created markdown digest")
     return response.text
 
-def plan_next_step(current_state: Dict[str, Any], available_tools: List[str]) -> Dict[str, Any]:
+def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any]) -> Dict[str, Any]:
     """
     Use LLM to plan the next step in the email processing pipeline.
     
@@ -151,7 +252,7 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: List[str]) ->
             - newsletters: List of identified newsletters
             - summarized_newsletters: List of newsletters with summaries
             - digest: Current digest if any
-        available_tools (List[str]): List of available tool names
+        available_tools (Dict[str, Any]): Dictionary of available tools with their descriptions
         
     Returns:
         Dict[str, Any]: Next step to take, including:
@@ -167,7 +268,7 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: List[str]) ->
     Current state:
     {json.dumps(current_state, indent=2)}
     
-    Available tools:
+    Available tools and their descriptions:
     {json.dumps(available_tools, indent=2)}
     
     Analyze the current state and available tools to determine:
@@ -175,25 +276,75 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: List[str]) ->
     2. Why this tool is the best choice
     3. Whether the overall goal has been achieved
     
-    Return your response as a JSON object with:
-    - tool: The name of the tool to invoke
-    - reason: A brief explanation of why this tool is needed
-    - is_complete: Boolean indicating if the goal is achieved
+    Example response for any state:
+    {{
+        "tool": "tool_name",
+        "reason": "Clear explanation based on current state",
+        "is_complete": false
+    }}
     
-    Format your response as a valid JSON object only, with no additional text.
+    You MUST return a valid JSON object with exactly these fields:
+    {{
+        "tool": "name_of_tool_to_invoke",
+        "reason": "explanation_of_choice",
+        "is_complete": true_or_false
+    }}
+    
+    IMPORTANT: 
+    1. Return ONLY the JSON object, no other text
+    2. The tool field must be one of the available tools listed above
+    3. The is_complete field must be a boolean (true or false)
+    4. The reason field must be a string explaining your choice
+    5. Respond with raw JSON only, no markdown or code blocks
+    6. DO NOT wrap the response in ```json or any other markdown formatting
+    7. Start your response with a single {{ character and end with a single }} character
     """
     
+    #logger.info("Planning prompt:")
+    #logger.info(prompt)
+    #logger.info("End of planning prompt")
+
     try:
         response = model.generate_content(prompt)
+        logger.info("Planning response:")
+        logger.info(response.text)
+        logger.info("End of planning response")
+        
         logger.debug(f"LLM Response for planning: {response.text}")
         
-        plan = json.loads(response.text)
+        # Add detailed logging for JSON parsing
+        logger.info("Attempting to parse response as JSON...")
+        logger.info(f"Response type: {type(response.text)}")
+        logger.info(f"Response length: {len(response.text)}")
+        logger.info(f"Raw response text: {repr(response.text)}")  # repr() will show any hidden characters
+        
+        # Check for empty response
+        if not response.text or response.text.strip() == '':
+            logger.error("Received empty response from LLM")
+            return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch as no response received', 'is_complete': False}
+            
+        # Clean and parse the response as JSON
+        cleaned_response = clean_json_response(response.text)
+        plan = json.loads(cleaned_response)
+        
+        # Validate required fields
+        required_fields = {'tool', 'reason', 'is_complete'}
+        if not all(field in plan for field in required_fields):
+            logger.error(f"Missing required fields in response. Got: {list(plan.keys())}")
+            return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch due to invalid response format', 'is_complete': False}
+            
         logger.info(f"Planned next step: {plan['tool']} - {plan['reason']}")
         return plan
     except json.JSONDecodeError as e:
         logger.error(f"Error parsing JSON response: {str(e)}")
         logger.error(f"Raw response: {response.text}")
-        return {'tool': None, 'reason': 'Error parsing LLM response', 'is_complete': False}
+        logger.error(f"Error position: {e.pos}")
+        logger.error(f"Error line: {e.lineno}")
+        logger.error(f"Error column: {e.colno}")
+        logger.error(f"Error message: {e.msg}")
+        return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch due to JSON parsing error', 'is_complete': False}
     except Exception as e:
         logger.error(f"Error in planning: {str(e)}")
-        return {'tool': None, 'reason': str(e), 'is_complete': False} 
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error details: {str(e)}")
+        return {'tool': 'fetch_emails', 'reason': f'Starting with email fetch due to error: {str(e)}', 'is_complete': False} 
