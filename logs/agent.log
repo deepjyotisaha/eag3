@@ -1,0 +1,793 @@
+2025-03-25 22:46:52,930 - backend.logging_config - INFO - Logging configured successfully
+2025-03-25 22:46:55,468 - backend.agent.llm - INFO - Configuring Gemini API...
+2025-03-25 22:46:55,469 - backend.agent.llm - INFO - Gemini API configured successfully
+2025-03-25 22:46:55,469 - backend.agent.agent - INFO - Starting new logging session
+2025-03-25 22:46:55,471 - backend.logging_config - INFO - Starting Flask server...
+2025-03-25 22:47:19,816 - backend.logging_config - INFO - Received request with data: {'emailCount': 5}
+2025-03-25 22:47:19,816 - backend.logging_config - INFO - Processing request for 5 emails
+2025-03-25 22:47:19,816 - backend.agent.agent - INFO - Starting email processing pipeline for 5 emails
+2025-03-25 22:47:19,824 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 22:47:20,697 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.2s ...
+2025-03-25 22:47:21,764 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.5s ...
+2025-03-25 22:47:22,604 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.7s ...
+2025-03-25 22:47:23,730 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 2.0s ...
+2025-03-25 22:47:26,398 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.4s ...
+2025-03-25 22:47:27,416 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 1.7s ...
+2025-03-25 22:47:29,439 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 1.0s ...
+2025-03-25 22:47:30,857 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 4.6s ...
+2025-03-25 22:47:35,902 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 5.9s ...
+2025-03-25 22:47:42,149 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.0s ...
+2025-03-25 22:47:42,501 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 7.6s ...
+2025-03-25 22:47:50,446 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 4.1s ...
+2025-03-25 22:47:55,509 - backend.agent.llm - INFO - Planning response:
+2025-03-25 22:47:55,510 - backend.agent.llm - INFO - ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.",
+    "is_complete": false
+}
+```
+2025-03-25 22:47:55,510 - backend.agent.llm - INFO - End of planning response
+2025-03-25 22:47:55,510 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.",
+    "is_complete": false
+}
+```
+2025-03-25 22:47:55,510 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.",
+    "is_complete": false
+}
+```
+2025-03-25 22:47:55,511 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.",
+    "is_complete": false
+}
+2025-03-25 22:47:55,511 - backend.agent.llm - INFO - Planned next step: fetch_emails - We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.
+2025-03-25 22:47:55,511 - backend.agent.agent - INFO - Planned next step: fetch_emails - We need to start by fetching emails from Gmail to process. The current state shows an empty email list, so fetching emails is the necessary first step.
+2025-03-25 22:47:55,512 - backend.agent.tools - INFO - Fetching 5 emails from Gmail
+2025-03-25 22:47:55,526 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-03-25 22:47:55,533 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5&alt=json
+2025-03-25 22:47:56,967 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce246d0e80db7?format=full&alt=json
+2025-03-25 22:47:57,532 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce0cd77e9d5e6?format=full&alt=json
+2025-03-25 22:47:58,197 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce07c4951a2f7?format=full&alt=json
+2025-03-25 22:47:58,652 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cdeeb907d44b2?format=full&alt=json
+2025-03-25 22:47:59,046 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cddd26ce2843f?format=full&alt=json
+2025-03-25 22:47:59,522 - backend.agent.tools - INFO - Successfully retrieved 5 emails
+2025-03-25 22:47:59,522 - backend.agent.agent - INFO - Completed step: fetch_emails
+2025-03-25 22:47:59,523 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 22:48:01,081 - backend.agent.llm - INFO - Planning response:
+2025-03-25 22:48:01,081 - backend.agent.llm - INFO - ```json
+{
+    "tool": "analyze_newsletters",
+    "reason": "The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:01,081 - backend.agent.llm - INFO - End of planning response
+2025-03-25 22:48:01,081 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "analyze_newsletters",
+    "reason": "The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:01,082 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "analyze_newsletters",
+    "reason": "The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:01,082 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "analyze_newsletters",
+    "reason": "The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.",
+    "is_complete": false
+}
+2025-03-25 22:48:01,082 - backend.agent.llm - INFO - Planned next step: analyze_newsletters - The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.
+2025-03-25 22:48:01,082 - backend.agent.agent - INFO - Planned next step: analyze_newsletters - The current state contains a list of emails but they haven't been processed to identify which ones are newsletters. The 'analyze_newsletters' tool is designed for this purpose, and is the next logical step in the pipeline.
+2025-03-25 22:48:01,082 - backend.agent.tools - INFO - Starting newsletter analysis for 5 emails
+2025-03-25 22:48:01,082 - backend.agent.llm - INFO - Sending prompt to LLM for newsletter identification
+2025-03-25 22:48:03,309 - backend.agent.llm - DEBUG - LLM Response for newsletter identification: [
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 22:48:03,310 - backend.agent.llm - DEBUG - Raw response: [
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 22:48:03,310 - backend.agent.llm - DEBUG - Cleaned response: [
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 22:48:03,310 - backend.agent.llm - INFO - Successfully identified 2 newsletters out of 5 emails
+2025-03-25 22:48:03,310 - backend.agent.agent - INFO - Completed step: analyze_newsletters
+2025-03-25 22:48:03,310 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 22:48:05,022 - backend.agent.llm - INFO - Planning response:
+2025-03-25 22:48:05,023 - backend.agent.llm - INFO - ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have already identified the newsletters. Now we need to summarize them to create a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:05,023 - backend.agent.llm - INFO - End of planning response
+2025-03-25 22:48:05,023 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have already identified the newsletters. Now we need to summarize them to create a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:05,023 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have already identified the newsletters. Now we need to summarize them to create a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:05,023 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "summarize_newsletters",
+    "reason": "We have already identified the newsletters. Now we need to summarize them to create a digest.",
+    "is_complete": false
+}
+2025-03-25 22:48:05,023 - backend.agent.llm - INFO - Planned next step: summarize_newsletters - We have already identified the newsletters. Now we need to summarize them to create a digest.
+2025-03-25 22:48:05,024 - backend.agent.agent - INFO - Planned next step: summarize_newsletters - We have already identified the newsletters. Now we need to summarize them to create a digest.
+2025-03-25 22:48:05,024 - backend.agent.tools - INFO - Starting newsletter summarization for 2 newsletters
+2025-03-25 22:48:05,024 - backend.agent.llm - INFO - Starting summary generation for 2 newsletters
+2025-03-25 22:48:05,024 - backend.agent.llm - INFO - Generating summary for newsletter 1/2: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 22:48:05,024 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 22:48:06,644 - backend.agent.llm - DEBUG - LLM Response for summary: Here's a concise summary of the Maven newsletter:
+
+**Themes:** The newsletter promotes courses focused on management skills, AI integration, and business scaling.
+
+**Key Highlights:**
+
+*   **Trending Courses:** Executive Communication & Influence, Building a PM Productivity System & AI Copilot, and MGMT Fundamentals.
+*   **Last Chance:** Courses on scaling a business with AI, AI Engineering Bootcamp and AI Consulting.
+*   **New Courses:** Community-Led Growth, Improving AI Products with Evals, and FP&A Mastery.
+*   **Recommended Courses:** Technical basics/foundations for PMs, and an AI Product Management Certification.
+
+**Calls to Action:**
+
+*   "Join today" links are provided for each highlighted course, encouraging immediate enrollment.
+*   A link to "Browse all upcoming courses" for further exploration.
+
+2025-03-25 22:48:06,644 - backend.agent.llm - INFO - Completed summary for: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 22:48:06,644 - backend.agent.llm - INFO - Generating summary for newsletter 2/2: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 22:48:06,644 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 22:48:08,021 - backend.agent.llm - DEBUG - LLM Response for summary: **Summary:**
+
+This Groww Digest newsletter announces government plans to remove tax on digital advertisements and highlights Hyundai's investment of Rs 694 crore in a tooling center.
+
+**Key Points:**
+
+*   Government is expected to eliminate tax on digital ads.
+*   Hyundai is establishing a Rs 694 crore tooling center.
+
+**Call to Action:**
+
+The absence of email content indicates no direct call to action within the received communication.
+
+2025-03-25 22:48:08,021 - backend.agent.llm - INFO - Completed summary for: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 22:48:08,022 - backend.agent.agent - INFO - Completed step: summarize_newsletters
+2025-03-25 22:48:08,022 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 22:48:10,060 - backend.agent.llm - INFO - Planning response:
+2025-03-25 22:48:10,061 - backend.agent.llm - INFO - ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:10,061 - backend.agent.llm - INFO - End of planning response
+2025-03-25 22:48:10,061 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:10,061 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.",
+    "is_complete": false
+}
+```
+2025-03-25 22:48:10,061 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "format_digest",
+    "reason": "We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.",
+    "is_complete": false
+}
+2025-03-25 22:48:10,061 - backend.agent.llm - INFO - Planned next step: format_digest - We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.
+2025-03-25 22:48:10,062 - backend.agent.agent - INFO - Planned next step: format_digest - We have fetched emails, analyzed them for newsletters, and summarized the newsletters. The next step is to format the summaries into a digest.
+2025-03-25 22:48:10,062 - backend.agent.tools - INFO - Starting digest formatting
+2025-03-25 22:48:10,062 - backend.agent.llm - INFO - Starting markdown digest creation
+2025-03-25 22:48:10,062 - backend.agent.llm - DEBUG - Making LLM call for markdown digest creation
+2025-03-25 22:48:12,743 - backend.agent.llm - DEBUG - LLM Response for markdown digest: # Newsletter Digest
+
+Here's a digest summarizing the key information from the provided newsletter summaries.
+
+## Maven: Grow as a manager, build your AI copilot, and scale your business with automation
+
+Here's a concise summary of the Maven newsletter:
+
+**Themes:** The newsletter promotes courses focused on management skills, AI integration, and business scaling.
+
+**Key Highlights:**
+
+*   **Trending Courses:** Executive Communication & Influence, Building a PM Productivity System & AI Copilot, and MGMT Fundamentals.
+*   **Last Chance:** Courses on scaling a business with AI, AI Engineering Bootcamp and AI Consulting.
+*   **New Courses:** Community-Led Growth, Improving AI Products with Evals, and FP&A Mastery.
+*   **Recommended Courses:** Technical basics/foundations for PMs, and an AI Product Management Certification.
+
+**Calls to Action:**
+
+*   "Join today" links are provided for each highlighted course, encouraging immediate enrollment.
+*   A link to "Browse all upcoming courses" for further exploration.
+
+## Groww Digest: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more
+
+**Summary:**
+
+This Groww Digest newsletter announces government plans to remove tax on digital advertisements and highlights Hyundai's investment of Rs 694 crore in a tooling center.
+
+**Key Points:**
+
+*   Government is expected to eliminate tax on digital ads.
+*   Hyundai is establishing a Rs 694 crore tooling center.
+
+**Call to Action:**
+
+The absence of email content indicates no direct call to action within the received communication.
+
+This digest provides a quick overview of the main points and calls to action from each newsletter, allowing you to quickly determine if further action or investigation is needed.
+
+2025-03-25 22:48:12,743 - backend.agent.llm - INFO - Successfully created markdown digest
+2025-03-25 22:48:12,743 - backend.agent.agent - INFO - Updated digest: True
+2025-03-25 22:48:12,743 - backend.agent.agent - INFO - Digest content: # Newsletter Digest
+
+Here's a digest summarizing the key information from the provided newsletter su...
+2025-03-25 22:48:12,744 - backend.agent.agent - INFO - Completed step: format_digest
+2025-03-25 22:48:12,744 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 22:48:14,574 - backend.agent.llm - INFO - Planning response:
+2025-03-25 22:48:14,575 - backend.agent.llm - INFO - ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.",
+    "is_complete": true
+}
+```
+2025-03-25 22:48:14,575 - backend.agent.llm - INFO - End of planning response
+2025-03-25 22:48:14,575 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.",
+    "is_complete": true
+}
+```
+2025-03-25 22:48:14,576 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "format_digest",
+    "reason": "We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.",
+    "is_complete": true
+}
+```
+2025-03-25 22:48:14,576 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "format_digest",
+    "reason": "We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.",
+    "is_complete": true
+}
+2025-03-25 22:48:14,576 - backend.agent.llm - INFO - Planned next step: format_digest - We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.
+2025-03-25 22:48:14,576 - backend.agent.agent - INFO - Planned next step: format_digest - We have fetched the emails, analyzed them for newsletters, summarized the newsletters and now the final step is to format the digest using the summaries of the identified newsletters.
+2025-03-25 22:48:14,576 - backend.agent.agent - INFO - Pipeline completed successfully
+2025-03-25 22:48:14,576 - backend.agent.agent - INFO - Final state: emails=5, newsletters=5, summarized=2, digest=True
+2025-03-25 22:48:14,576 - backend.agent.agent - INFO - Digest content: # Newsletter Digest
+
+Here's a digest summarizing the key information from the provided newsletter su...
+2025-03-25 22:48:14,576 - backend.logging_config - INFO - Generated digest: # Newsletter Digest
+
+Here's a digest summarizing the key information from the provided newsletter summaries.
+
+## Maven: Grow as a manager, build your AI copilot, and scale your business with automation
+
+Here's a concise summary of the Maven newsletter:
+
+**Themes:** The newsletter promotes courses focused on management skills, AI integration, and business scaling.
+
+**Key Highlights:**
+
+*   **Trending Courses:** Executive Communication & Influence, Building a PM Productivity System & AI Copilot, and MGMT Fundamentals.
+*   **Last Chance:** Courses on scaling a business with AI, AI Engineering Bootcamp and AI Consulting.
+*   **New Courses:** Community-Led Growth, Improving AI Products with Evals, and FP&A Mastery.
+*   **Recommended Courses:** Technical basics/foundations for PMs, and an AI Product Management Certification.
+
+**Calls to Action:**
+
+*   "Join today" links are provided for each highlighted course, encouraging immediate enrollment.
+*   A link to "Browse all upcoming courses" for further exploration.
+
+## Groww Digest: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more
+
+**Summary:**
+
+This Groww Digest newsletter announces government plans to remove tax on digital advertisements and highlights Hyundai's investment of Rs 694 crore in a tooling center.
+
+**Key Points:**
+
+*   Government is expected to eliminate tax on digital ads.
+*   Hyundai is establishing a Rs 694 crore tooling center.
+
+**Call to Action:**
+
+The absence of email content indicates no direct call to action within the received communication.
+
+This digest provides a quick overview of the main points and calls to action from each newsletter, allowing you to quickly determine if further action or investigation is needed.
+
+2025-03-25 23:12:06,706 - backend.logging_config - INFO - Logging configured successfully
+2025-03-25 23:12:09,125 - backend.agent.llm - INFO - Configuring Gemini API...
+2025-03-25 23:12:09,128 - backend.agent.llm - INFO - Gemini API configured successfully
+2025-03-25 23:12:09,129 - backend.agent.agent - INFO - Starting new logging session
+2025-03-25 23:12:09,132 - backend.logging_config - INFO - Starting Flask server...
+2025-03-25 23:12:09,392 - backend.logging_config - INFO - Logging configured successfully
+2025-03-25 23:12:11,463 - backend.agent.llm - INFO - Configuring Gemini API...
+2025-03-25 23:12:11,464 - backend.agent.llm - INFO - Gemini API configured successfully
+2025-03-25 23:12:11,464 - backend.agent.agent - INFO - Starting new logging session
+2025-03-25 23:12:11,468 - backend.logging_config - INFO - Starting Flask server...
+2025-03-25 23:12:13,710 - backend.logging_config - INFO - Received request with data: {'emailCount': 10}
+2025-03-25 23:12:13,711 - backend.logging_config - INFO - Processing request for 10 emails
+2025-03-25 23:12:13,712 - backend.agent.agent - INFO - Starting email processing pipeline for 10 emails
+2025-03-25 23:12:13,712 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 23:12:16,505 - backend.agent.llm - INFO - Planning response:
+2025-03-25 23:12:16,507 - backend.agent.llm - INFO - ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.",
+    "is_complete": false
+}
+```
+2025-03-25 23:12:16,507 - backend.agent.llm - INFO - End of planning response
+2025-03-25 23:12:16,508 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.",
+    "is_complete": false
+}
+```
+2025-03-25 23:12:16,508 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.",
+    "is_complete": false
+}
+```
+2025-03-25 23:12:16,509 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "fetch_emails",
+    "reason": "We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.",
+    "is_complete": false
+}
+2025-03-25 23:12:16,509 - backend.agent.llm - INFO - Planned next step: fetch_emails - We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.
+2025-03-25 23:12:16,510 - backend.agent.agent - INFO - Planned next step: fetch_emails - We need to start by fetching emails from Gmail to process them. We have email_count=10, so we will fetch 10 emails.
+2025-03-25 23:12:16,510 - backend.agent.tools - INFO - Fetching 10 emails from Gmail
+2025-03-25 23:12:16,550 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-03-25 23:12:16,585 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10&alt=json
+2025-03-25 23:12:18,513 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce640578e86db?format=full&alt=json
+2025-03-25 23:12:19,068 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce246d0e80db7?format=full&alt=json
+2025-03-25 23:12:20,451 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce0cd77e9d5e6?format=full&alt=json
+2025-03-25 23:12:21,681 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195ce07c4951a2f7?format=full&alt=json
+2025-03-25 23:12:22,293 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cdeeb907d44b2?format=full&alt=json
+2025-03-25 23:12:23,515 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cddd26ce2843f?format=full&alt=json
+2025-03-25 23:12:24,016 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cdd4bd79c36e2?format=full&alt=json
+2025-03-25 23:12:25,460 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cdd42f6792cf0?format=full&alt=json
+2025-03-25 23:12:26,188 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cdbb3c665f58b?format=full&alt=json
+2025-03-25 23:12:26,715 - googleapiclient.discovery - DEBUG - URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages/195cda5c2eb4af19?format=full&alt=json
+2025-03-25 23:12:27,257 - backend.agent.tools - INFO - Successfully retrieved 10 emails
+2025-03-25 23:12:27,257 - backend.agent.agent - INFO - Completed step: fetch_emails
+2025-03-25 23:12:27,258 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 23:12:28,489 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.5s ...
+2025-03-25 23:12:30,106 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.7s ...
+2025-03-25 23:12:31,923 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.1s ...
+2025-03-25 23:12:33,237 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 1.2s ...
+2025-03-25 23:12:35,626 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.6s ...
+2025-03-25 23:12:37,378 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 3.5s ...
+2025-03-25 23:12:42,133 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 0.9s ...
+2025-03-25 23:12:44,130 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 6.0s ...
+2025-03-25 23:12:51,404 - google.api_core.retry - DEBUG - Retrying due to 503 The service is currently unavailable., sleeping 4.6s ...
+2025-03-25 23:12:57,638 - backend.agent.llm - INFO - Planning response:
+2025-03-25 23:12:57,640 - backend.agent.llm - INFO - ```json
+{
+  "tool": "analyze_newsletters",
+  "reason": "We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.",
+  "is_complete": false
+}
+```
+2025-03-25 23:12:57,640 - backend.agent.llm - INFO - End of planning response
+2025-03-25 23:12:57,641 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+  "tool": "analyze_newsletters",
+  "reason": "We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.",
+  "is_complete": false
+}
+```
+2025-03-25 23:12:57,642 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+  "tool": "analyze_newsletters",
+  "reason": "We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.",
+  "is_complete": false
+}
+```
+2025-03-25 23:12:57,645 - backend.agent.llm - DEBUG - Cleaned response: {
+  "tool": "analyze_newsletters",
+  "reason": "We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.",
+  "is_complete": false
+}
+2025-03-25 23:12:57,645 - backend.agent.llm - INFO - Planned next step: analyze_newsletters - We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.
+2025-03-25 23:12:57,645 - backend.agent.agent - INFO - Planned next step: analyze_newsletters - We have fetched emails, but not analyzed them to identify newsletters. The next step is to use the `analyze_newsletters` tool to identify which of the fetched emails are newsletters.
+2025-03-25 23:12:57,646 - backend.agent.tools - INFO - Starting newsletter analysis for 10 emails
+2025-03-25 23:12:57,646 - backend.agent.llm - INFO - Sending prompt to LLM for newsletter identification
+2025-03-25 23:13:00,841 - backend.agent.llm - DEBUG - LLM Response for newsletter identification: [
+  {
+    "subject": "Ending Soon: Up to 45% More Bonus Points.",
+    "from": "Points for Marriott Bonvoy <Marriott-Bonvoy@points-mail.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Blue states don't build. Red states do.",
+    "from": "Noahpinion <noahpinion@substack.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Defying the old paradigm: How digital transformation is disrupting the marketing funnel",
+    "from": "\"YouTube Re:View\" <noreply@youtube.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Be Back to School ready\u2026",
+    "from": "HP India <crm-ccm.ap-ipg@newsgram.hp.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Benedict's Newsletter: No. 584",
+    "from": "Benedict Evans <list@ben-evans.com>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 23:13:00,841 - backend.agent.llm - DEBUG - Raw response: [
+  {
+    "subject": "Ending Soon: Up to 45% More Bonus Points.",
+    "from": "Points for Marriott Bonvoy <Marriott-Bonvoy@points-mail.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Blue states don't build. Red states do.",
+    "from": "Noahpinion <noahpinion@substack.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Defying the old paradigm: How digital transformation is disrupting the marketing funnel",
+    "from": "\"YouTube Re:View\" <noreply@youtube.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Be Back to School ready\u2026",
+    "from": "HP India <crm-ccm.ap-ipg@newsgram.hp.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Benedict's Newsletter: No. 584",
+    "from": "Benedict Evans <list@ben-evans.com>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 23:13:00,842 - backend.agent.llm - DEBUG - Cleaned response: [
+  {
+    "subject": "Ending Soon: Up to 45% More Bonus Points.",
+    "from": "Points for Marriott Bonvoy <Marriott-Bonvoy@points-mail.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Check Out The 2025 Killer Content Award Winners!",
+    "from": "Klaudia Tirico <demandgenreport@emeraldeex.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Grow as a manager, build your AI copilot, and scale your business with automation",
+    "from": "Maven <maven@list.maven.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "\u201csenior product manager\u201d: Walmart India Labs - senior product manager and more",
+    "from": "LinkedIn Job Alerts <jobalerts-noreply@linkedin.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Exclusive Invitation: Sadhguru in San Francisco & Philadelphia, November",
+    "from": "Isha USA <Info@ishausa.org>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest",
+    "from": "Groww Digest <noreply@digest.groww.in>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Blue states don't build. Red states do.",
+    "from": "Noahpinion <noahpinion@substack.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Defying the old paradigm: How digital transformation is disrupting the marketing funnel",
+    "from": "\"YouTube Re:View\" <noreply@youtube.com>",
+    "is_newsletter": true
+  },
+  {
+    "subject": "Be Back to School ready\u2026",
+    "from": "HP India <crm-ccm.ap-ipg@newsgram.hp.com>",
+    "is_newsletter": false
+  },
+  {
+    "subject": "Benedict's Newsletter: No. 584",
+    "from": "Benedict Evans <list@ben-evans.com>",
+    "is_newsletter": true
+  }
+]
+2025-03-25 23:13:00,842 - backend.agent.llm - INFO - Successfully identified 5 newsletters out of 10 emails
+2025-03-25 23:13:00,842 - backend.agent.agent - INFO - Completed step: analyze_newsletters
+2025-03-25 23:13:00,842 - backend.agent.llm - INFO - Planning next step in the pipeline
+2025-03-25 23:13:02,852 - backend.agent.llm - INFO - Planning response:
+2025-03-25 23:13:02,853 - backend.agent.llm - INFO - ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.",
+    "is_complete": false
+}
+```
+2025-03-25 23:13:02,853 - backend.agent.llm - INFO - End of planning response
+2025-03-25 23:13:02,853 - backend.agent.llm - DEBUG - LLM Response for planning: ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.",
+    "is_complete": false
+}
+```
+2025-03-25 23:13:02,854 - backend.agent.llm - DEBUG - Raw response: ```json
+{
+    "tool": "summarize_newsletters",
+    "reason": "We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.",
+    "is_complete": false
+}
+```
+2025-03-25 23:13:02,854 - backend.agent.llm - DEBUG - Cleaned response: {
+    "tool": "summarize_newsletters",
+    "reason": "We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.",
+    "is_complete": false
+}
+2025-03-25 23:13:02,854 - backend.agent.llm - INFO - Planned next step: summarize_newsletters - We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.
+2025-03-25 23:13:02,855 - backend.agent.agent - INFO - Planned next step: summarize_newsletters - We have fetched emails, analyzed them for newsletters, and now need to summarize the newsletters before creating the final digest.
+2025-03-25 23:13:02,855 - backend.agent.tools - INFO - Starting newsletter summarization for 5 newsletters
+2025-03-25 23:13:02,855 - backend.agent.llm - INFO - Starting summary generation for 5 newsletters
+2025-03-25 23:13:02,855 - backend.agent.llm - INFO - Generating summary for newsletter 1/5: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 23:13:02,855 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 23:13:05,096 - backend.agent.llm - DEBUG - LLM Response for summary: **Maven Newsletter Summary:**
+
+This Maven newsletter promotes a variety of courses focused on professional development in management, AI, and business scaling.
+
+**Key Themes/Topics:**
+
+*   **Leadership & Communication:** Courses on executive communication, influence, and management fundamentals.
+*   **AI & Automation:** Courses on building AI copilots for productivity, scaling businesses with AI workflows, AI engineering, and AI consulting.
+*   **Product Management:** Courses focused on AI product management, technical skills for product managers, and improving AI products.
+*   **Finance:** A course that offers FP&A Mastery.
+*   **Community:** A course focused on unlocking sustainable and human-driven growth.
+
+**Highlights:**
+
+*   Featured instructors with extensive experience and large followings.
+*   "Last chance to enroll" for courses starting soon.
+*   "New on Maven" section highlighting recently added courses.
+*   Courses are practical and offer hands-on learning.
+
+**Call to Action:**
+
+*   Join the listed courses today via the provided links.
+*   Browse all upcoming courses on the Maven website.
+
+2025-03-25 23:13:05,096 - backend.agent.llm - INFO - Completed summary for: Grow as a manager, build your AI copilot, and scale your business with automation
+2025-03-25 23:13:05,097 - backend.agent.llm - INFO - Generating summary for newsletter 2/5: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 23:13:05,097 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 23:13:07,096 - backend.agent.llm - DEBUG - LLM Response for summary: **Summary of Groww Digest Newsletter:**
+
+This Groww Digest newsletter, with the subject "Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more," likely covers updates on the Indian financial market and economy.
+
+**Key Topics/Themes (inferred from subject line):**
+
+*   Government policy changes impacting digital advertising (removal of tax).
+*   Hyundai's investment in a tooling center in India (Rs 694 crore).
+*   Potentially other financial news or updates ("& more").
+
+**Key Points/Highlights (inferred):**
+
+*   The government is expected to remove a tax on digital advertisements.
+*   Hyundai is investing significantly in Indian manufacturing.
+
+**Call to Action (inferred):**
+
+Since there is no content, there is no direct call to action. However, the nature of the newsletter implies an indirect call to action to read the full article to learn more about these financial and economic events and how they might affect investments or personal finance.
+
+2025-03-25 23:13:07,097 - backend.agent.llm - INFO - Completed summary for: Govt to remove tax on digital ads, Hyundai's Rs 694 cr tooling centre, & more - Groww Digest
+2025-03-25 23:13:07,097 - backend.agent.llm - INFO - Generating summary for newsletter 3/5: Blue states don't build. Red states do.
+2025-03-25 23:13:07,097 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Blue states don't build. Red states do.
+2025-03-25 23:13:09,203 - backend.agent.llm - DEBUG - LLM Response for summary: This newsletter argues that "degrowth" policies in blue states are stifling development, driving population loss, and hindering progress on issues like homelessness and renewable energy adoption. It highlights that red states, despite conservative rhetoric, are outpacing blue states in areas like housing construction and renewable energy infrastructure due to less restrictive land-use policies and a willingness to build.
+
+Key points include:
+
+*   Blue states are losing population and congressional seats due to high housing costs and a general reluctance to build.
+*   Red states are leading in renewable energy deployment due to easier permitting and land use policies.
+*   Homelessness is significantly worse in blue states due to a lack of affordable housing.
+*   Biden's industrial policies are disproportionately benefiting red states because they are more willing to build the necessary infrastructure.
+
+The call to action is for progressives in blue states to abandon "degrowth" policies and embrace "abundance" by prioritizing building more housing, factories, and energy infrastructure to revitalize their economies and address social problems.
+
+2025-03-25 23:13:09,203 - backend.agent.llm - INFO - Completed summary for: Blue states don't build. Red states do.
+2025-03-25 23:13:09,204 - backend.agent.llm - INFO - Generating summary for newsletter 4/5: Defying the old paradigm: How digital transformation is disrupting the marketing funnel
+2025-03-25 23:13:09,204 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Defying the old paradigm: How digital transformation is disrupting the marketing funnel
+2025-03-25 23:13:11,029 - backend.agent.llm - DEBUG - LLM Response for summary: Here's a concise summary of the YouTube Re:View newsletter:
+
+**Main Theme:** Digital transformation is disrupting the traditional linear marketing funnel, emphasizing the need to prioritize high-influence touchpoints for growth.
+
+**Key Points:**
+
+*   The old marketing funnel is outdated due to fragmented consumer behaviors (streaming, scrolling, searching, shopping happening simultaneously).
+*   Reach alone isn't enough; influence is crucial for delivering relevant content, capturing attention, and building trust.
+*   "Influence maps" are presented as a new framework that recognizes diverse consumer journeys, allowing for tailored strategies and optimized touchpoint impact.
+*   AI (like Google's video solutions) can help build these influence maps, analyze data, personalize messaging, and identify influential touchpoints.
+
+**Call to Action:** Explore provided links for more insights on leveraging AI and adopting an influence-driven approach for marketing effectiveness. The newsletter also asks for feedback and encourages subscription.
+
+2025-03-25 23:13:11,030 - backend.agent.llm - INFO - Completed summary for: Defying the old paradigm: How digital transformation is disrupting the marketing funnel
+2025-03-25 23:13:11,030 - backend.agent.llm - INFO - Generating summary for newsletter 5/5: Benedict's Newsletter: No. 584
+2025-03-25 23:13:11,031 - backend.agent.llm - DEBUG - Making LLM call for summary generation of: Benedict's Newsletter: No. 584
+2025-03-25 23:13:11,642 - backend.agent.agent - ERROR - Error in invoke_agent: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 48
+}
+]
+2025-03-25 23:13:11,642 - backend.logging_config - ERROR - Error generating digest: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 48
+}
+]
