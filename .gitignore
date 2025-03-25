@@ -67,9 +67,6 @@ venv/
 env/
 .env/
 
-# Logs
-*.log
-
 # Distribution / packaging
 dist/
 build/
