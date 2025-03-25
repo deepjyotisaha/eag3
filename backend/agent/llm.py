@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 import json
 import sys
 import os
+import re
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -54,34 +55,36 @@ except Exception as e:
     logger.error(f"Error details: {str(e)}")
     raise
 
-def clean_json_response(response_text: str) -> str:
+def clean_json_response(text: str) -> str:
     """
-    Clean the response text to ensure it's valid JSON before parsing.
-    Removes markdown formatting and any other non-JSON content.
+    Clean the LLM response to ensure it's valid JSON.
+    Handles markdown formatting and other common issues.
     
     Args:
-        response_text (str): Raw response text from LLM
+        text (str): Raw response text from LLM
         
     Returns:
         str: Cleaned JSON string
     """
-    # Remove markdown code blocks
-    response_text = response_text.replace('```json', '').replace('```', '')
+    # Log the raw response for debugging
+    logger.debug(f"Raw response: {text}")
     
-    # Find the first '{' and last '}'
-    start = response_text.find('{')
-    end = response_text.rfind('}')
+    # Remove markdown code block markers if present
+    text = text.replace('```json', '').replace('```', '')
     
-    if start == -1 or end == -1:
-        raise ValueError("No valid JSON object found in response")
-        
-    # Extract just the JSON object
-    json_str = response_text[start:end + 1]
+    # Remove any leading/trailing whitespace and newlines
+    text = text.strip()
     
-    # Remove any leading/trailing whitespace
-    json_str = json_str.strip()
+    # Remove any hidden characters
+    text = ''.join(char for char in text if char.isprintable() or char in '\n\r\t')
     
-    return json_str
+    # Remove any trailing commas before closing brackets/braces
+    text = re.sub(r',(\s*[}\]])', r'\1', text)
+    
+    # Log the cleaned response for debugging
+    logger.debug(f"Cleaned response: {text}")
+    
+    return text
 
 def identify_newsletters(emails: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
