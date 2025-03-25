@@ -13,6 +13,10 @@ __pycache__/
 **/*.key
 **/*.cert
 **/secrets.*
+**/config.json
+**/oauth2.json
+**/client_secrets.json
+**/service_account.json
 
 # IDE and Editor
 .idea/
@@ -37,6 +41,10 @@ backend/credentials.json
 backend/token.pickle
 backend/.env
 backend/secrets.*
+backend/config.json
+backend/oauth2.json
+backend/client_secrets.json
+backend/service_account.json
 
 # Generated files
 generate_icons.py
