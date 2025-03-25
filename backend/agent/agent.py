@@ -7,6 +7,7 @@ from .tools import (
     format_digest
 )
 from .llm import plan_next_step
+from .tool_manifests import TOOL_MANIFESTS
 import os
 
 # Get logger for this module
@@ -19,21 +20,75 @@ logger.info("Starting new logging session")
 TOOLS = {
     'fetch_emails': {
         'function': fetch_emails,
-        'description': 'This tool fetches emails from Gmail, takes a number of emails to fetch as input, and returns a list of email dictionaries containing subject, sender, and content'
+        'manifest': TOOL_MANIFESTS['fetch_emails']
     },
     'analyze_newsletters': {
         'function': analyze_newsletters,
-        'description': 'This tool analyzes emails, takes a list of email dictionaries, analyzes them and returns the identified newsletters with an added flag is_newsletter'
+        'manifest': TOOL_MANIFESTS['analyze_newsletters']
     },
     'summarize_newsletters': {
         'function': summarize_newsletters,
-        'description': 'This tool generates summaries of newsletters, takes a list of identified newsletters, and returns the same list with added summary field for each newsletter'
+        'manifest': TOOL_MANIFESTS['summarize_newsletters']
     },
     'format_digest': {
         'function': format_digest,
-        'description': 'This tool formats newsletter summaries into a markdown digest, takes a list of summarized newsletters, and returns a markdown-formatted string with introduction, sections, and conclusion'
+        'manifest': TOOL_MANIFESTS['format_digest']
     }
 }
+
+def prepare_tool_params(tool_name: str, state: Dict[str, Any], email_count: int) -> Dict[str, Any]:
+    """
+    Prepare tool parameters based on the tool's manifest requirements.
+    
+    Args:
+        tool_name (str): Name of the tool to prepare parameters for
+        state (Dict[str, Any]): Current state of the agent
+        email_count (int): Number of emails to process
+        
+    Returns:
+        Dict[str, Any]: Prepared parameters for the tool
+    """
+    tool_manifest = TOOLS[tool_name]['manifest']
+    tool_params = {}
+    
+    for param_name, param_info in tool_manifest['input_params'].items():
+        if param_name == 'num_emails':
+            tool_params[param_name] = email_count
+        elif param_name in state:
+            value = state[param_name]
+            
+            # Apply filtering if specified in the manifest
+            if param_info.get('filter'):
+                filter_info = param_info['filter']
+                if isinstance(value, list):
+                    value = [
+                        item for item in value 
+                        if item.get(filter_info['field']) == filter_info['value']
+                    ]
+            
+            tool_params[param_name] = value
+                
+    return tool_params
+
+def update_state(state: Dict[str, Any], tool_name: str, result: Any) -> Dict[str, Any]:
+    """
+    Update state based on the tool's manifest requirements.
+    
+    Args:
+        state (Dict[str, Any]): Current state
+        tool_name (str): Name of the tool that was executed
+        result (Any): Result from the tool execution
+        
+    Returns:
+        Dict[str, Any]: Updated state
+    """
+    tool_manifest = TOOLS[tool_name]['manifest']
+    state_updates = tool_manifest['state_requirements']['writes']
+    
+    for state_key in state_updates:
+        state[state_key] = result
+            
+    return state
 
 def invoke_agent(email_count: int) -> str:
     """
@@ -59,7 +114,11 @@ def invoke_agent(email_count: int) -> str:
         
         # Create a serializable version of tools for the LLM
         tools_for_llm = {
-            name: {'description': tool['description']}
+            name: {
+                'description': tool['manifest']['description'],
+                'input_params': tool['manifest']['input_params'],
+                'output_params': tool['manifest']['output_params']
+            }
             for name, tool in TOOLS.items()
         }
         
@@ -80,43 +139,16 @@ def invoke_agent(email_count: int) -> str:
                 logger.error(f"Invalid tool selected: {plan['tool']}")
                 raise ValueError(f"Invalid tool selected: {plan['tool']}")
             
-            # Get the tool function
+            # Get the tool function and prepare parameters
             tool_name = plan['tool']
-            tool_params = plan.get('parameters', {})
-            
-            # Get the tool function
+            tool_params = prepare_tool_params(tool_name, state, email_count)
             tool_func = TOOLS[tool_name]['function']
-            
-            # Prepare parameters based on tool requirements
-            if tool_name == 'fetch_emails':
-                tool_params['num_emails'] = email_count
-            elif tool_name == 'analyze_newsletters':
-                tool_params['emails'] = state['emails']
-            elif tool_name == 'summarize_newsletters':
-                # Only pass newsletters where is_newsletter is true
-                newsletters = [email for email in state['newsletters'] if email.get('is_newsletter', False)]
-                tool_params['newsletters'] = newsletters
-            elif tool_name == 'format_digest':
-                # Only pass summarized newsletters where is_newsletter is true
-                summarized = [email for email in state['summarized_newsletters'] if email.get('is_newsletter', False)]
-                tool_params['summarized_newsletters'] = summarized
             
             # Execute the tool with parameters
             result = tool_func(**tool_params)
             
             # Update state based on the tool's result
-            if tool_name == 'fetch_emails':
-                state['emails'] = result
-            elif tool_name == 'analyze_newsletters':
-                state['newsletters'] = result
-            elif tool_name == 'summarize_newsletters':
-                # Only store summarized newsletters where is_newsletter is true
-                state['summarized_newsletters'] = [email for email in result if email.get('is_newsletter', False)]
-            elif tool_name == 'format_digest':
-                state['digest'] = result
-                logger.info(f"Updated digest: {bool(result)}")
-                if result:
-                    logger.info("Digest content: %s", result[:100] + "..." if len(result) > 100 else result)
+            state = update_state(state, tool_name, result)
             
             logger.info(f"Completed step: {tool_name}")
             

@@ -70,13 +70,16 @@ def get_email_content(service, msg_id):
 
 def fetch_emails(num_emails=10) -> List[Dict[str, Any]]:
     """
-    Tool to fetch emails from Gmail.
+    Tool to fetch emails from Gmail using the Gmail API.
     
     Args:
-        num_emails (int): Number of emails to fetch (default: 10)
+        num_emails (int, optional): Number of emails to fetch. Defaults to 10.
         
     Returns:
-        list: List of email dictionaries containing subject, sender, and content
+        List[Dict[str, Any]]: List of email dictionaries containing:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
     """
     try:
         logger.info(f"Fetching {num_emails} emails from Gmail")
@@ -108,10 +111,17 @@ def analyze_newsletters(emails: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Tool to analyze emails and identify which ones are newsletters.
     
     Args:
-        emails (List[Dict[str, Any]]): List of email dictionaries containing subject, sender, and content
+        emails (List[Dict[str, Any]]): List of email dictionaries containing:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
         
     Returns:
-        List[Dict[str, Any]]: List of identified newsletters with additional 'is_newsletter' field
+        List[Dict[str, Any]]: List of emails with added fields:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
+            - is_newsletter (bool): Whether the email is identified as a newsletter
     """
     logger.info(f"Starting newsletter analysis for {len(emails)} emails")
     return identify_newsletters(emails)
@@ -121,10 +131,19 @@ def summarize_newsletters(newsletters: List[Dict[str, Any]]) -> List[Dict[str, A
     Tool to generate concise summaries of newsletters.
     
     Args:
-        newsletters (List[Dict[str, Any]]): List of newsletter dictionaries
+        newsletters (List[Dict[str, Any]]): List of newsletter dictionaries containing:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
+            - is_newsletter (bool): Whether the email is identified as a newsletter
         
     Returns:
-        List[Dict[str, Any]]: List of newsletters with added 'summary' field containing structured summaries
+        List[Dict[str, Any]]: List of newsletters with added fields:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
+            - is_newsletter (bool): Whether the email is identified as a newsletter
+            - summary (str): Generated summary of the newsletter content
     """
     logger.info(f"Starting newsletter summarization for {len(newsletters)} newsletters")
     return generate_summaries(newsletters)
@@ -134,7 +153,12 @@ def format_digest(summarized_newsletters: List[Dict[str, Any]]) -> str:
     Tool to format newsletter summaries into a markdown digest.
     
     Args:
-        summarized_newsletters (List[Dict[str, Any]]): List of newsletters with summaries
+        summarized_newsletters (List[Dict[str, Any]]): List of newsletters containing:
+            - subject (str): Email subject
+            - from (str): Sender email
+            - content (str): Email content
+            - is_newsletter (bool): Whether the email is identified as a newsletter
+            - summary (str): Generated summary of the newsletter content
         
     Returns:
         str: Markdown-formatted digest with introduction, newsletter sections, and conclusion

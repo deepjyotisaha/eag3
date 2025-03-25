@@ -43,7 +43,7 @@ def clean_json_response(text: str) -> str:
         str: Cleaned JSON string
     """
     # Log the raw response for debugging
-    logger.debug(f"Raw response: {text}")
+    #logger.debug(f"Raw response: {text}")
     
     # Remove markdown code block markers if present
     text = text.replace('```json', '').replace('```', '')
@@ -58,7 +58,7 @@ def clean_json_response(text: str) -> str:
     text = re.sub(r',(\s*[}\]])', r'\1', text)
     
     # Log the cleaned response for debugging
-    logger.debug(f"Cleaned response: {text}")
+    #logger.debug(f"Cleaned response: {text}")
     
     return text
 
@@ -235,7 +235,8 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
             - newsletters: List of identified newsletters
             - summarized_newsletters: List of newsletters with summaries
             - digest: Current digest if any
-        available_tools (Dict[str, Any]): Dictionary of available tools with their descriptions
+        available_tools (Dict[str, Any]): Dictionary of available tools with their descriptions,
+            input parameters, output parameters, and state requirements
         
     Returns:
         Dict[str, Any]: Next step to take, including:
@@ -245,96 +246,71 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     """
     logger.info("Planning next step in the pipeline")
     
+    # Create a more detailed prompt that includes tool requirements
     prompt = f"""
     You are a planning agent for a Gmail newsletter digest system. Your goal is to process emails and create a newsletter digest.
     
     Current state:
     {json.dumps(current_state, indent=2)}
     
-    Available tools and their descriptions:
+    Available tools:
     {json.dumps(available_tools, indent=2)}
     
-    Analyze the current state and available tools to determine:
-    1. Which tool should be invoked next
-    2. Why this tool is the best choice
-    3. Whether the overall goal has been achieved
+    For each tool, consider:
+    1. Input parameters required and their types
+    2. Output parameters and their structure
+    3. State requirements (what state it reads and writes)
     
-    The pipeline is ONLY complete when:
-    1. We have fetched emails
-    2. We have analyzed them for newsletters
-    3. We have summarized the newsletters
-    4. We have generated a final digest
+    Rules for planning:
+    1. Only choose a tool if its required input parameters are available in the current state
+    2. Consider the state dependencies (what state each tool reads and writes)
+    3. The pipeline is complete ONLY when:
+       - We have fetched emails
+       - We have identified newsletters
+       - We have generated summaries for newsletters
+       - We have formatted the final digest
+    4. Tools must be used in a logical order based on their dependencies
+    5. NEVER mark the task as complete until the format_digest tool has been called and the digest is in the state
     
-    Example response for any state:
+    Return a JSON object with:
     {{
-        "tool": "tool_name",
-        "reason": "Clear explanation based on current state",
-        "is_complete": false
+        "tool": "name of the tool to use",
+        "reason": "explanation of why this tool was chosen",
+        "is_complete": true/false
     }}
     
-    You MUST return a valid JSON object with exactly these fields:
-    {{
-        "tool": "name_of_tool_to_invoke",
-        "reason": "explanation_of_choice",
-        "is_complete": true_or_false
-    }}
-    
-    IMPORTANT: 
+    IMPORTANT:
     1. Return ONLY the JSON object, no other text
-    2. The tool field must be one of the available tools listed above
-    3. The is_complete field must be a boolean (true or false)
-    4. The reason field must be a string explaining your choice
-    5. Respond with raw JSON only, no markdown or code blocks
-    6. DO NOT wrap the response in ```json or any other markdown formatting
-    7. Start your response with a single {{ character and end with a single }} character
-    8. The pipeline is NOT complete until we have a final digest
+    2. Respond with raw JSON only, no markdown or code blocks
+    3. DO NOT wrap the response in ```json or any other markdown formatting
+    4. Set is_complete to true ONLY after format_digest has been called and the digest is in the state
     """
     
-    #logger.info("Planning prompt:")
-    #logger.info(prompt)
-    #logger.info("End of planning prompt")
-
+    logger.debug("Making LLM call for next step planning")
+    response = model.generate_content(prompt)
+    logger.debug(f"LLM Response for planning: {response.text}")
+    
     try:
-        response = model.generate_content(prompt)
-        logger.info("Planning response:")
-        logger.info(response.text)
-        logger.info("End of planning response")
-        
-        logger.debug(f"LLM Response for planning: {response.text}")
-        
-        # Add detailed logging for JSON parsing
-        #logger.info("Attempting to parse response as JSON...")
-        #logger.info(f"Response type: {type(response.text)}")
-        #logger.info(f"Response length: {len(response.text)}")
-        #logger.info(f"Raw response text: {repr(response.text)}")  # repr() will show any hidden characters
-        
-        # Check for empty response
-        if not response.text or response.text.strip() == '':
-            logger.error("Received empty response from LLM")
-            return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch as no response received', 'is_complete': False}
-            
-        # Clean and parse the response as JSON
+        # Clean and parse the response
         cleaned_response = clean_json_response(response.text)
         plan = json.loads(cleaned_response)
         
-        # Validate required fields
-        required_fields = {'tool', 'reason', 'is_complete'}
-        if not all(field in plan for field in required_fields):
-            logger.error(f"Missing required fields in response. Got: {list(plan.keys())}")
-            return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch due to invalid response format', 'is_complete': False}
+        # Validate the plan
+        if not isinstance(plan, dict) or 'tool' not in plan or 'reason' not in plan or 'is_complete' not in plan:
+            logger.error("Invalid plan format")
+            return {'tool': None, 'reason': 'Invalid plan format', 'is_complete': False}
             
-        logger.info(f"Planned next step: {plan['tool']} - {plan['reason']}")
+        # Validate tool selection
+        if plan['tool'] and plan['tool'] not in available_tools:
+            logger.error(f"Invalid tool selected: {plan['tool']}")
+            return {'tool': None, 'reason': f'Invalid tool selected: {plan["tool"]}', 'is_complete': False}
+            
         return plan
+        
     except json.JSONDecodeError as e:
         logger.error(f"Error parsing JSON response: {str(e)}")
         logger.error(f"Raw response: {response.text}")
-        logger.error(f"Error position: {e.pos}")
-        logger.error(f"Error line: {e.lineno}")
-        logger.error(f"Error column: {e.colno}")
-        logger.error(f"Error message: {e.msg}")
-        return {'tool': 'fetch_emails', 'reason': 'Starting with email fetch due to JSON parsing error', 'is_complete': False}
+        return {'tool': None, 'reason': 'Error parsing response', 'is_complete': False}
     except Exception as e:
-        logger.error(f"Error in planning: {str(e)}")
-        logger.error(f"Error type: {type(e).__name__}")
-        logger.error(f"Error details: {str(e)}")
-        return {'tool': 'fetch_emails', 'reason': f'Starting with email fetch due to error: {str(e)}', 'is_complete': False} 
+        logger.error(f"Error in plan_next_step: {str(e)}")
+        return {'tool': None, 'reason': f'Error: {str(e)}', 'is_complete': False} 
