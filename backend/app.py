@@ -4,11 +4,9 @@ import sys
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import logging factory first - this will configure logging immediately
-from backend.logger_factory import LoggerFactory
-
-# Create logger after logging is configured
-logger = LoggerFactory.get_logger(__name__)
+# Import and setup logging first
+from backend.logging_config import setup_logging
+logger = setup_logging()
 
 # Now import other modules after logging is configured
 from flask import Flask, jsonify, request

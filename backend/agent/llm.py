@@ -1,6 +1,7 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+import logging
 from typing import List, Dict, Any
 import json
 import sys
@@ -10,9 +11,8 @@ import re
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-# Import logger factory and get logger
-from backend.logger_factory import LoggerFactory
-logger = LoggerFactory.get_logger(__name__)
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -20,39 +20,15 @@ load_dotenv()
 # Configure Gemini
 api_key = os.getenv('GOOGLE_API_KEY')
 if not api_key:
-    logger.error("GOOGLE_API_KEY not found in environment variables")
     raise ValueError("GOOGLE_API_KEY not found in environment variables")
 
-logger.debug("Configuring Gemini API...")  # Changed to debug
+logger.info("Configuring Gemini API...")
 try:
-    # Configure the API
     genai.configure(api_key=api_key)
-    logger.debug("Gemini API configured successfully")  # Changed to debug
-    
-    # List available models
-    available_models = genai.list_models()
-    model_names = [model.name for model in available_models]
-    logger.debug(f"Available models: {model_names}")  # Changed to debug
-    
-    # Check if our desired model is available
-    desired_model = 'gemini-2.0-flash'
-    full_model_name = f'models/{desired_model}'
-    if full_model_name not in model_names:
-        logger.error(f"Model {full_model_name} not found in available models")
-        logger.error("Please check the API documentation for the correct model name")
-        raise ValueError(f"Model {full_model_name} not available")
-    
-    # Try to get the model
-    model = genai.GenerativeModel(desired_model)  # Use base name without prefix
-    # Test the model with a simple prompt
-    test_response = model.generate_content("Generate a poem about spring flowers")
-    logger.debug(f"Test response: {test_response.text}")  # Changed to debug
-    logger.debug("Model test successful")  # Changed to debug
-    
+    model = genai.GenerativeModel('gemini-2.0-flash')
+    logger.info("Gemini API configured successfully")
 except Exception as e:
     logger.error(f"Error configuring Gemini API: {str(e)}")
-    logger.error(f"Error type: {type(e).__name__}")
-    logger.error(f"Error details: {str(e)}")
     raise
 
 def clean_json_response(text: str) -> str:
@@ -114,11 +90,13 @@ def identify_newsletters(emails: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         Emails to analyze:
         {json.dumps(safe_emails, indent=2)}
         
-        For each email, determine if it's a newsletter based on:
+        For each email, determine if it's a newsletter based on the following characteristics:
         1. Regular distribution pattern
         2. Topic-focused content
         3. Mass distribution characteristics
         4. Newsletter-like formatting
+        5. The email is from a newsletter service provider which is either an individual or an organization
+        6. Emails promoting products or services are not newsletters, job alerts are not newsletters
         
         Return a JSON array where each object has:
         {{
@@ -139,7 +117,7 @@ def identify_newsletters(emails: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         
         logger.info("Sending prompt to LLM for newsletter identification")
         response = model.generate_content(prompt)
-        logger.debug(f"Response attributes: {dir(response)}")
+        #logger.debug(f"Response attributes: {dir(response)}")
         
         if not hasattr(response, 'text'):
             logger.error("Response object does not have 'text' attribute")
@@ -204,6 +182,8 @@ def generate_summaries(newsletters: List[Dict[str, Any]]) -> List[Dict[str, Any]
         1. Main topics or themes
         2. Key points or highlights
         3. Any calls to action
+
+        Keep the summary concise and to the point and do not exceed 200 words.
         
         Return the summary in a clear, structured format.
         """
@@ -279,6 +259,12 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     2. Why this tool is the best choice
     3. Whether the overall goal has been achieved
     
+    The pipeline is ONLY complete when:
+    1. We have fetched emails
+    2. We have analyzed them for newsletters
+    3. We have summarized the newsletters
+    4. We have generated a final digest
+    
     Example response for any state:
     {{
         "tool": "tool_name",
@@ -301,6 +287,7 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     5. Respond with raw JSON only, no markdown or code blocks
     6. DO NOT wrap the response in ```json or any other markdown formatting
     7. Start your response with a single {{ character and end with a single }} character
+    8. The pipeline is NOT complete until we have a final digest
     """
     
     #logger.info("Planning prompt:")
@@ -316,10 +303,10 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
         logger.debug(f"LLM Response for planning: {response.text}")
         
         # Add detailed logging for JSON parsing
-        logger.info("Attempting to parse response as JSON...")
-        logger.info(f"Response type: {type(response.text)}")
-        logger.info(f"Response length: {len(response.text)}")
-        logger.info(f"Raw response text: {repr(response.text)}")  # repr() will show any hidden characters
+        #logger.info("Attempting to parse response as JSON...")
+        #logger.info(f"Response type: {type(response.text)}")
+        #logger.info(f"Response length: {len(response.text)}")
+        #logger.info(f"Raw response text: {repr(response.text)}")  # repr() will show any hidden characters
         
         # Check for empty response
         if not response.text or response.text.strip() == '':
