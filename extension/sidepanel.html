@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Gmail Newsletter Digest</title>
+    <script src="lib/marked.min.js"></script>
     <style>
         body {
             width: 100%;
@@ -70,6 +71,52 @@
             margin-top: 10px;
             font-style: italic;
             color: #666;
+        }
+        /* Markdown Styles */
+        .digest-content {
+            line-height: 1.6;
+            color: #333;
+        }
+        .digest-content h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1a73e8;
+            border-bottom: 2px solid #e8eaed;
+            padding-bottom: 10px;
+        }
+        .digest-content h2 {
+            font-size: 20px;
+            margin: 20px 0 15px;
+            color: #202124;
+        }
+        .digest-content p {
+            margin-bottom: 15px;
+        }
+        .digest-content ul, .digest-content ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        .digest-content li {
+            margin-bottom: 8px;
+        }
+        .digest-content blockquote {
+            border-left: 4px solid #e8eaed;
+            margin: 15px 0;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            color: #5f6368;
+        }
+        .digest-content code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .digest-content pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
         }
     </style>
 </head>

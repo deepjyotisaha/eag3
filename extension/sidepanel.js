@@ -19,9 +19,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatNewsletterDigest(digest) {
+        // Configure marked options
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            sanitize: true
+        });
+        
+        // Convert markdown to HTML
+        const htmlContent = marked.parse(digest);
+        
         return `
             <div class="digest-content">
-                ${digest}
+                ${htmlContent}
             </div>
         `;
     }
@@ -62,7 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
-            console.log('Data received:', data);
+            console.log('Raw data received:', JSON.stringify(data, null, 2));
+            console.log('Digest content:', data.digest);
 
             if (data.status === 'success') {
                 // Display newsletter digest

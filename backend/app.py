@@ -44,6 +44,7 @@ def generate_digest():
         
         # Invoke the agent to process emails and generate digest
         digest = invoke_agent(email_count)
+        logger.info(f"Generated digest: {digest}")
         
         return jsonify({
             'status': 'success',
