@@ -25,11 +25,6 @@ __pycache__/
 *.swo
 .DS_Store
 
-# Logs
-*.log
-logs/
-log/
-
 # Distribution / packaging
 dist/
 build/
