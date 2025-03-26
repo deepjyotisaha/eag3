@@ -248,7 +248,7 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     
     # Create a more detailed prompt that includes tool requirements
     prompt = f"""
-    You are a planning agent for a Gmail newsletter digest system. Your goal is to process emails and create a newsletter digest.
+    You are a planning agent for a Gmail newsletter digest generator. Your goal is to process emails and create a single digest with summaries of identified newsletters.
     
     Current state:
     {json.dumps(current_state, indent=2)}
@@ -260,11 +260,18 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     1. Input parameters required and their types
     2. Output parameters and their structure
     3. State requirements (what state it reads and writes)
+
+    Return a JSON object with:
+    {{
+        "tool": "name of the tool to use",
+        "reason": "explanation of why this tool was chosen",
+        "is_complete": true or false # Set to true only after format_digest has been executed and state contains digest, else set to false
+    }}
     
     Rules for planning:
     1. Only choose a tool if its required input parameters are available in the current state
     2. Consider the state dependencies (what state each tool reads and writes)
-    3. The pipeline is complete ONLY when:
+    3. The pipeline is complete ONLY when all the following conditions are met:
        - We have fetched emails
        - We have identified newsletters
        - We have generated summaries for newsletters
@@ -272,14 +279,7 @@ def plan_next_step(current_state: Dict[str, Any], available_tools: Dict[str, Any
     4. Tools must be used in a logical order based on their dependencies
     5. NEVER mark the task as complete until the format_digest tool has been called and the digest is in the state
     
-    Return a JSON object with:
-    {{
-        "tool": "name of the tool to use",
-        "reason": "explanation of why this tool was chosen",
-        "is_complete": true/false
-    }}
-    
-    IMPORTANT:
+    ALWAYS REMEMBER:
     1. Return ONLY the JSON object, no other text
     2. Respond with raw JSON only, no markdown or code blocks
     3. DO NOT wrap the response in ```json or any other markdown formatting

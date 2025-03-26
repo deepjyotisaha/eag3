@@ -163,5 +163,26 @@ def format_digest(summarized_newsletters: List[Dict[str, Any]]) -> str:
     Returns:
         str: Markdown-formatted digest with introduction, newsletter sections, and conclusion
     """
-    logger.info("Starting digest formatting")
+    logger.info("Starting markdown digest creation")
+    
+    # Clean the newsletters data to handle encoding issues
+    cleaned_newsletters = []
+    for newsletter in summarized_newsletters:
+        cleaned = {}
+        for key, value in newsletter.items():
+            if isinstance(value, str):
+                # Replace or remove problematic characters while preserving most Unicode
+                value = value.encode('utf-8', errors='ignore').decode('utf-8')
+            cleaned[key] = value
+        cleaned_newsletters.append(cleaned)
+    
+    prompt = f"""
+    Create a well-formatted markdown digest of these newsletter summaries:
+    
+    {cleaned_newsletters}
+    
+    Format it as:
+    # Newsletter Digest
+    ...
+    """
     return create_markdown_digest(summarized_newsletters) 
